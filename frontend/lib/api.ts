@@ -1,19 +1,28 @@
-import axios from 'axios';
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
-const api = axios.create({
-  baseURL: API_URL,
-  headers: { 'Content-Type': 'application/json' },
-});
+// Lazy load axios only when API methods are called
+let axiosInstance: any = null;
+
+async function getAxios() {
+  if (!axiosInstance) {
+    const axios = (await import('axios')).default;
+    axiosInstance = axios.create({
+      baseURL: API_URL,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+  return axiosInstance;
+}
 
 export const invoiceApi = {
   create: async (data: any) => {
+    const api = await getAxios();
     const response = await api.post('/invoices/', data);
     return response.data;
   },
 
   downloadPdf: async (id: number) => {
+    const api = await getAxios();
     const response = await api.get(`/invoices/${id}/download_pdf/`, {
       responseType: 'blob',
     });
@@ -27,6 +36,7 @@ export const invoiceApi = {
   },
 
   shareWhatsApp: async (id: number, phoneNumber: string) => {
+    const api = await getAxios();
     const response = await api.post(`/invoices/${id}/share_whatsapp/`, {
       phone: phoneNumber,
     });
@@ -34,6 +44,7 @@ export const invoiceApi = {
   },
 
   shareEmail: async (id: number, email: string) => {
+    const api = await getAxios();
     const response = await api.post(`/invoices/${id}/send_email/`, {
       email,
     });
@@ -41,4 +52,4 @@ export const invoiceApi = {
   },
 };
 
-export default api;
+export default { invoiceApi };
