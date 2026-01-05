@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { INDIAN_STATES, type InvoiceType, type InvoiceItem } from '@/types/invoice';
 import AddItemForm from './AddItemForm';
+import { saveSellerDetails, loadSellerDetails, clearSellerDetails, hasSellerDetails } from '@/lib/localStorage';
 
 interface InvoiceFormProps {
   invoiceType: InvoiceType;
@@ -23,6 +24,19 @@ export default function InvoiceForm({
 }: InvoiceFormProps) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<any>({});
+  const [saveDetails, setSaveDetails] = useState(false);
+  const [hasSavedDetails, setHasSavedDetails] = useState(false);
+
+  // Load saved seller details on mount (only for user invoices)
+  useEffect(() => {
+    if (invoiceType === 'user') {
+      const saved = loadSellerDetails();
+      if (saved) {
+        setFormData(saved);
+        setHasSavedDetails(true);
+      }
+    }
+  }, [invoiceType]);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +44,18 @@ export default function InvoiceForm({
     if (items.length === 0) {
       alert('Please add at least one item');
       return;
+    }
+
+    // Save seller details if checkbox is checked (only for user invoices)
+    if (invoiceType === 'user' && saveDetails) {
+      saveSellerDetails({
+        seller_name: formData.seller_name,
+        seller_gstin: formData.seller_gstin,
+        seller_address: formData.seller_address,
+        seller_pincode: formData.seller_pincode,
+        seller_state: formData.seller_state,
+        gst_rate: formData.gst_rate || 18,
+      });
     }
 
     setLoading(true);
@@ -49,7 +75,16 @@ export default function InvoiceForm({
     } finally {
       setLoading(false);
     }
-  }, [formData, items, onSubmit]);
+  }, [formData, items, onSubmit, invoiceType, saveDetails]);
+
+  const handleClearSavedDetails = useCallback(() => {
+    if (confirm('Are you sure you want to clear your saved business details?')) {
+      clearSellerDetails();
+      setFormData({});
+      setHasSavedDetails(false);
+      alert('Saved details cleared successfully!');
+    }
+  }, []);
 
   const updateField = useCallback((field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
@@ -103,16 +138,19 @@ export default function InvoiceForm({
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Business Name *</label>
                   <input required placeholder="Your Company Pvt Ltd" className="form-input"
+                    value={formData.seller_name || ''}
                     onChange={(e) => updateField('seller_name', e.target.value)} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">GSTIN *</label>
                   <input required placeholder="29ABCDE1234F1Z5" maxLength={15} className="form-input uppercase"
+                    value={formData.seller_gstin || ''}
                     onChange={(e) => updateField('seller_gstin', e.target.value.toUpperCase())} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">State *</label>
                   <select required className="form-input"
+                    value={formData.seller_state || ''}
                     onChange={(e) => updateField('seller_state', e.target.value)}>
                     <option value="">Select State</option>
                     {INDIAN_STATES.map(s => <option key={s.code} value={s.code}>{s.name}</option>)}
@@ -121,18 +159,20 @@ export default function InvoiceForm({
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
                   <input required placeholder="Street, City" className="form-input"
+                    value={formData.seller_address || ''}
                     onChange={(e) => updateField('seller_address', e.target.value)} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Pincode *</label>
                   <input required placeholder="400001" maxLength={6} className="form-input"
+                    value={formData.seller_pincode || ''}
                     onChange={(e) => updateField('seller_pincode', e.target.value)} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">GST Rate (%) *</label>
                   <select required className="form-input"
-                    onChange={(e) => updateField('gst_rate', parseFloat(e.target.value))}
-                    defaultValue="18">
+                    value={formData.gst_rate || '18'}
+                    onChange={(e) => updateField('gst_rate', parseFloat(e.target.value))}>
                     <option value="0">0% - Exempt</option>
                     <option value="5">5% - Essential Goods/Services</option>
                     <option value="12">12% - Standard Rate</option>
@@ -140,6 +180,30 @@ export default function InvoiceForm({
                     <option value="28">28% - Luxury Goods</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Save Details Checkbox and Clear Button */}
+              <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={saveDetails}
+                    onChange={(e) => setSaveDetails(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <span className="ml-2 text-sm text-gray-700">
+                    💾 Save my business details for next time
+                  </span>
+                </label>
+                {hasSavedDetails && (
+                  <button
+                    type="button"
+                    onClick={handleClearSavedDetails}
+                    className="text-sm text-red-600 hover:text-red-800 hover:underline"
+                  >
+                    🗑️ Clear Saved Details
+                  </button>
+                )}
               </div>
             </div>
           )}

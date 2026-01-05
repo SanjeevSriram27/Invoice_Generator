@@ -8,20 +8,29 @@ interface AddItemFormProps {
 }
 
 export default function AddItemForm({ onAdd }: AddItemFormProps) {
-  const [item, setItem] = useState<InvoiceItem>({
+  const [item, setItem] = useState({
     description: '',
     hsn_sac: '',
-    quantity: 1,
-    unit_price: 0,
+    quantity: '',
+    unit_price: '',
   });
 
   const handleAddItem = () => {
-    if (!item.description || !item.hsn_sac || item.quantity <= 0 || item.unit_price <= 0) {
+    const quantity = parseFloat(item.quantity);
+    const unit_price = parseFloat(item.unit_price);
+
+    if (!item.description || !item.hsn_sac || !quantity || quantity <= 0 || !unit_price || unit_price <= 0) {
       alert('Please fill all item fields');
       return;
     }
-    onAdd(item);
-    setItem({ description: '', hsn_sac: '', quantity: 1, unit_price: 0 });
+
+    onAdd({
+      description: item.description,
+      hsn_sac: item.hsn_sac,
+      quantity,
+      unit_price,
+    });
+    setItem({ description: '', hsn_sac: '', quantity: '', unit_price: '' });
   };
 
   return (
@@ -50,7 +59,7 @@ export default function AddItemForm({ onAdd }: AddItemFormProps) {
             min="1"
             className="form-input-sm"
             value={item.quantity}
-            onChange={(e) => setItem({...item, quantity: parseFloat(e.target.value) || 1})}
+            onChange={(e) => setItem({...item, quantity: e.target.value})}
           />
           <input
             type="number"
@@ -59,7 +68,7 @@ export default function AddItemForm({ onAdd }: AddItemFormProps) {
             step="0.01"
             className="form-input-sm"
             value={item.unit_price}
-            onChange={(e) => setItem({...item, unit_price: parseFloat(e.target.value) || 0})}
+            onChange={(e) => setItem({...item, unit_price: e.target.value})}
           />
           <button
             type="button"
