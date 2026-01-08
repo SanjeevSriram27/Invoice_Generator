@@ -507,15 +507,15 @@ export default function BulkUploadPage() {
 
           {/* Success Result */}
           {result && (
-            <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-green-900 mb-4">
+            <div className="mt-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-green-900 dark:text-green-200 mb-4">
                 {result.message}
               </h3>
 
               {/* Summary */}
-              <div className="bg-white rounded-lg p-4 mb-4">
-                <h4 className="font-semibold mb-2">Summary:</h4>
-                <ul className="space-y-1 text-sm">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 mb-4">
+                <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Summary:</h4>
+                <ul className="space-y-1 text-sm text-gray-900 dark:text-gray-200">
                   <li>Total Rows: {result.summary.total_rows}</li>
                   <li>✅ Successful: {result.summary.successful}</li>
                   <li>❌ Failed: {result.summary.failed}</li>
@@ -531,17 +531,17 @@ export default function BulkUploadPage() {
               {/* Success List */}
               {result.successes && result.successes.length > 0 && (
                 <div className="mb-4">
-                  <h4 className="font-semibold mb-2">✅ Successful Invoices:</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">✅ Successful Invoices:</h4>
                   <div className="space-y-2 max-h-96 overflow-y-auto">
                     {result.successes.map((success: any, index: number) => (
-                      <div key={index} className="bg-white border rounded-lg p-3 text-sm">
+                      <div key={index} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 text-sm">
                         <div className="flex justify-between items-start">
                           <div>
-                            <p className="font-semibold">{success.buyer_name}</p>
-                            <p className="text-gray-600">Invoice: {success.invoice_number}</p>
-                            <p className="text-gray-600">Total: Rs. {success.total}</p>
-                            {success.email_sent && <p className="text-green-600">✓ Email Sent</p>}
-                            {success.whatsapp_sent && <p className="text-green-600">✓ WhatsApp Sent</p>}
+                            <p className="font-semibold text-gray-900 dark:text-gray-100">{success.buyer_name}</p>
+                            <p className="text-gray-600 dark:text-gray-400">Invoice: {success.invoice_number}</p>
+                            <p className="text-gray-600 dark:text-gray-400">Total: Rs. {success.total}</p>
+                            {success.email_sent && <p className="text-green-600 dark:text-green-400">✓ Email Sent</p>}
+                            {success.whatsapp_sent && <p className="text-green-600 dark:text-green-400">✓ WhatsApp Sent</p>}
                           </div>
                           <a
                             href={success.download_url}
