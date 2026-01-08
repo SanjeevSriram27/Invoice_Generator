@@ -9,17 +9,17 @@ interface InvoiceTypeSelectorProps {
 export default function InvoiceTypeSelector({ onSelectType }: InvoiceTypeSelectorProps) {
   return (
     <div className="bg-gradient-page">
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-16 fade-in">
         <div className="text-center mb-16">
           <div className="inline-block mb-4">
-            <div className="bg-blue-600 text-white px-6 py-2 rounded-full text-sm font-semibold">
+            <div className="bg-blue-600 dark:bg-blue-500 text-white px-6 py-2 rounded-full text-sm font-semibold">
               GST Compliant
             </div>
           </div>
-          <h1 className="text-6xl font-bold text-gray-900 mb-4 tracking-tight">
+          <h1 className="text-6xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">
             Invoice Generator
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Create professional GST-compliant invoices in seconds
           </p>
 
@@ -54,11 +54,11 @@ export default function InvoiceTypeSelector({ onSelectType }: InvoiceTypeSelecto
               </div>
             </div>
 
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
               Topmate Invoice
             </h2>
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              Generate an invoice where <span className="font-semibold text-gray-800">Topmate is the seller</span>. Perfect for platform transactions.
+            <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+              Generate an invoice where <span className="font-semibold text-gray-800 dark:text-gray-100">Topmate is the seller</span>. Perfect for platform transactions.
             </p>
 
             <div className="space-y-3 mb-6">
@@ -82,7 +82,7 @@ export default function InvoiceTypeSelector({ onSelectType }: InvoiceTypeSelecto
               </div>
             </div>
 
-            <div className="flex items-center text-blue-600 font-semibold group-hover:translate-x-2 transition-transform">
+            <div className="flex items-center text-blue-600 dark:text-blue-400 font-semibold group-hover:translate-x-2 transition-transform">
               Get Started
               <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -103,11 +103,11 @@ export default function InvoiceTypeSelector({ onSelectType }: InvoiceTypeSelecto
               </div>
             </div>
 
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
               Personal Invoice
             </h2>
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              Generate an invoice for <span className="font-semibold text-gray-800">your own business</span>. Perfect for freelancers and agencies.
+            <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+              Generate an invoice for <span className="font-semibold text-gray-800 dark:text-gray-100">your own business</span>. Perfect for freelancers and agencies.
             </p>
 
             <div className="space-y-3 mb-6">
@@ -131,7 +131,7 @@ export default function InvoiceTypeSelector({ onSelectType }: InvoiceTypeSelecto
               </div>
             </div>
 
-            <div className="flex items-center text-green-600 font-semibold group-hover:translate-x-2 transition-transform">
+            <div className="flex items-center text-green-600 dark:text-green-400 font-semibold group-hover:translate-x-2 transition-transform">
               Get Started
               <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />

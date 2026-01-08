@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import type { InvoiceItem } from '@/types/invoice';
 
 interface AddItemFormProps {
@@ -20,7 +21,7 @@ export default function AddItemForm({ onAdd }: AddItemFormProps) {
     const unit_price = parseFloat(item.unit_price);
 
     if (!item.description || !item.hsn_sac || !quantity || quantity <= 0 || !unit_price || unit_price <= 0) {
-      alert('Please fill all item fields');
+      toast.error('Please fill all item fields');
       return;
     }
 
@@ -31,11 +32,12 @@ export default function AddItemForm({ onAdd }: AddItemFormProps) {
       unit_price,
     });
     setItem({ description: '', hsn_sac: '', quantity: '', unit_price: '' });
+    toast.success('Item added successfully!');
   };
 
   return (
-    <div className="border-t border-gray-200 pt-5">
-      <p className="text-sm font-medium text-gray-700 mb-3">Add New Item</p>
+    <div className="border-t border-gray-200 dark:border-gray-700 pt-5">
+      <p className="label-text mb-3">Add New Item</p>
       <div className="space-y-3">
         <div className="grid md:grid-cols-2 gap-3">
           <input

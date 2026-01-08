@@ -1,9 +1,12 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { INDIAN_STATES, type InvoiceType, type InvoiceItem } from '@/types/invoice';
 import AddItemForm from './AddItemForm';
+import ErrorMessage from './ErrorMessage';
 import { saveSellerDetails, loadSellerDetails, clearSellerDetails, hasSellerDetails } from '@/lib/localStorage';
+import { validateGSTIN, validatePincode, validateEmail, validatePhone } from '@/lib/validation';
 
 interface InvoiceFormProps {
   invoiceType: InvoiceType;
@@ -26,6 +29,7 @@ export default function InvoiceForm({
   const [formData, setFormData] = useState<any>({});
   const [saveDetails, setSaveDetails] = useState(false);
   const [hasSavedDetails, setHasSavedDetails] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string | null>>({});
 
   // Load saved seller details on mount (only for user invoices)
   useEffect(() => {
@@ -42,7 +46,7 @@ export default function InvoiceForm({
     e.preventDefault();
 
     if (items.length === 0) {
-      alert('Please add at least one item');
+      toast.error('Please add at least one item');
       return;
     }
 
@@ -71,7 +75,7 @@ export default function InvoiceForm({
         }
       }
 
-      alert('Error: ' + errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -82,30 +86,44 @@ export default function InvoiceForm({
       clearSellerDetails();
       setFormData({});
       setHasSavedDetails(false);
-      alert('Saved details cleared successfully!');
+      toast.success('Saved details cleared successfully!');
     }
   }, []);
 
   const updateField = useCallback((field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
+
+    // Real-time validation
+    let error: string | null = null;
+    if (field === 'seller_gstin' || field === 'buyer_gstin') {
+      error = validateGSTIN(value);
+    } else if (field === 'seller_pincode' || field === 'buyer_pincode') {
+      error = validatePincode(value);
+    } else if (field === 'buyer_email') {
+      error = validateEmail(value);
+    } else if (field === 'buyer_phone') {
+      error = validatePhone(value);
+    }
+
+    setErrors((prev) => ({ ...prev, [field]: error }));
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b sticky top-0 z-10 shadow-sm">
+      <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 sticky top-0 z-10 shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <button onClick={onBack} className="text-gray-600 hover:text-gray-900 flex items-center">
+            <button onClick={onBack} className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white flex items-center transition-colors">
               <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               Back
             </button>
-            <div className="h-8 w-px bg-gray-300"></div>
+            <div className="h-8 w-px bg-gray-300 dark:bg-gray-600"></div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Create Invoice</h1>
-              <p className="text-sm text-gray-500">
+              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">Create Invoice</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {invoiceType === 'topmate' ? 'Topmate Invoice' : 'Personal Invoice'}
               </p>
             </div>
@@ -130,25 +148,26 @@ export default function InvoiceForm({
                   </svg>
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900">Your Business Details</h2>
+                  <h2 className="text-lg heading-text">Your Business Details</h2>
                   <p className="text-sm text-gray-500">Information about your company</p>
                 </div>
               </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Business Name *</label>
+                  <label className="block label-text mb-1">Business Name *</label>
                   <input required placeholder="Your Company Pvt Ltd" className="form-input"
                     value={formData.seller_name || ''}
                     onChange={(e) => updateField('seller_name', e.target.value)} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">GSTIN *</label>
-                  <input required placeholder="29ABCDE1234F1Z5" maxLength={15} className="form-input uppercase"
+                  <label className="block label-text mb-1">GSTIN *</label>
+                  <input required placeholder="29ABCDE1234F1Z5" maxLength={15} className={`form-input uppercase ${errors.seller_gstin ? 'border-red-500 focus:ring-red-500' : ''}`}
                     value={formData.seller_gstin || ''}
                     onChange={(e) => updateField('seller_gstin', e.target.value.toUpperCase())} />
+                  <ErrorMessage errors={errors} field="seller_gstin" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">State *</label>
+                  <label className="block label-text mb-1">State *</label>
                   <select required className="form-input"
                     value={formData.seller_state || ''}
                     onChange={(e) => updateField('seller_state', e.target.value)}>
@@ -157,19 +176,20 @@ export default function InvoiceForm({
                   </select>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
+                  <label className="block label-text mb-1">Address *</label>
                   <input required placeholder="Street, City" className="form-input"
                     value={formData.seller_address || ''}
                     onChange={(e) => updateField('seller_address', e.target.value)} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Pincode *</label>
-                  <input required placeholder="400001" maxLength={6} className="form-input"
+                  <label className="block label-text mb-1">Pincode *</label>
+                  <input required placeholder="400001" maxLength={6} className={`form-input ${errors.seller_pincode ? 'border-red-500 focus:ring-red-500' : ''}`}
                     value={formData.seller_pincode || ''}
                     onChange={(e) => updateField('seller_pincode', e.target.value)} />
+                  <ErrorMessage errors={errors} field="seller_pincode" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">GST Rate (%) *</label>
+                  <label className="block label-text mb-1">GST Rate (%) *</label>
                   <select required className="form-input"
                     value={formData.gst_rate || '18'}
                     onChange={(e) => updateField('gst_rate', parseFloat(e.target.value))}>
@@ -183,15 +203,15 @@ export default function InvoiceForm({
               </div>
 
               {/* Save Details Checkbox and Clear Button */}
-              <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
+              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
                 <label className="flex items-center cursor-pointer">
                   <input
                     type="checkbox"
                     checked={saveDetails}
                     onChange={(e) => setSaveDetails(e.target.checked)}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    className="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded focus:ring-blue-500"
                   />
-                  <span className="ml-2 text-sm text-gray-700">
+                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                     💾 Save my business details for next time
                   </span>
                 </label>
@@ -217,23 +237,24 @@ export default function InvoiceForm({
                 </svg>
               </div>
               <div>
-                <h2 className="text-lg font-bold text-gray-900">Client Details</h2>
+                <h2 className="text-lg heading-text">Client Details</h2>
                 <p className="text-sm text-gray-500">Who are you billing?</p>
               </div>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Client Name *</label>
+                <label className="block label-text mb-1">Client Name *</label>
                 <input required placeholder="Client Company Name" className="form-input"
                   onChange={(e) => updateField('buyer_name', e.target.value)} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Client GSTIN <span className="text-gray-400">(Optional)</span></label>
-                <input placeholder="29ABCDE1234F1Z5" maxLength={15} className="form-input uppercase"
+                <label className="block label-text mb-1">Client GSTIN <span className="text-gray-400">(Optional)</span></label>
+                <input placeholder="29ABCDE1234F1Z5" maxLength={15} className={`form-input uppercase ${errors.buyer_gstin ? 'border-red-500 focus:ring-red-500' : ''}`}
                   onChange={(e) => updateField('buyer_gstin', e.target.value.toUpperCase())} />
+                <ErrorMessage errors={errors} field="buyer_gstin" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">State *</label>
+                <label className="block label-text mb-1">State *</label>
                 <select required className="form-input"
                   onChange={(e) => updateField('buyer_state', e.target.value)}>
                   <option value="">Select State</option>
@@ -241,24 +262,27 @@ export default function InvoiceForm({
                 </select>
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
+                <label className="block label-text mb-1">Address *</label>
                 <input required placeholder="Street, City" className="form-input"
                   onChange={(e) => updateField('buyer_address', e.target.value)} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Pincode *</label>
-                <input required placeholder="400001" maxLength={6} className="form-input"
+                <label className="block label-text mb-1">Pincode *</label>
+                <input required placeholder="400001" maxLength={6} className={`form-input ${errors.buyer_pincode ? 'border-red-500 focus:ring-red-500' : ''}`}
                   onChange={(e) => updateField('buyer_pincode', e.target.value)} />
+                <ErrorMessage errors={errors} field="buyer_pincode" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone <span className="text-gray-400">(Optional)</span></label>
-                <input type="tel" placeholder="+91 9876543210" maxLength={15} className="form-input"
+                <label className="block label-text mb-1">Phone <span className="text-gray-400">(Optional)</span></label>
+                <input type="tel" placeholder="+91 9876543210" maxLength={15} className={`form-input ${errors.buyer_phone ? 'border-red-500 focus:ring-red-500' : ''}`}
                   onChange={(e) => updateField('buyer_phone', e.target.value)} />
+                <ErrorMessage errors={errors} field="buyer_phone" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email <span className="text-gray-400">(Optional)</span></label>
-                <input type="email" placeholder="client@example.com" className="form-input"
+                <label className="block label-text mb-1">Email <span className="text-gray-400">(Optional)</span></label>
+                <input type="email" placeholder="client@example.com" className={`form-input ${errors.buyer_email ? 'border-red-500 focus:ring-red-500' : ''}`}
                   onChange={(e) => updateField('buyer_email', e.target.value)} />
+                <ErrorMessage errors={errors} field="buyer_email" />
               </div>
             </div>
           </div>
@@ -273,7 +297,7 @@ export default function InvoiceForm({
                   </svg>
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900">Invoice Items</h2>
+                  <h2 className="text-lg heading-text">Invoice Items</h2>
                   <p className="text-sm text-gray-500">Add products or services</p>
                 </div>
               </div>
@@ -283,7 +307,7 @@ export default function InvoiceForm({
             {items.length > 0 && (
               <div className="mb-5 space-y-3">
                 {items.map((item, idx) => (
-                  <div key={idx} className="item-card">
+                  <div key={idx} className="item-card stagger-item">
                     <div className="flex-1">
                       <div className="flex items-start justify-between">
                         <div>
@@ -293,7 +317,7 @@ export default function InvoiceForm({
                           </p>
                         </div>
                         <div className="text-right ml-4">
-                          <p className="text-lg font-bold text-gray-900">₹{(item.quantity * item.unit_price).toFixed(2)}</p>
+                          <p className="text-lg heading-text">₹{(item.quantity * item.unit_price).toFixed(2)}</p>
                         </div>
                       </div>
                     </div>
@@ -316,7 +340,7 @@ export default function InvoiceForm({
 
           {/* Notes */}
           <div className="section-card">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Notes / Terms & Conditions <span className="text-gray-400">(Optional)</span></label>
+            <label className="block label-text mb-2">Notes / Terms & Conditions <span className="text-gray-400">(Optional)</span></label>
             <textarea
               placeholder="Payment due within 30 days..."
               rows={3}
