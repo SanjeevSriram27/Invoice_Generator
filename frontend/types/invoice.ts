@@ -31,6 +31,13 @@ export interface Invoice {
   seller_state: string;
   seller_phone?: string;
   seller_email?: string;
+  seller_website?: string;
+  seller_logo?: string | File;
+  seller_bank_name?: string;
+  seller_account_number?: string;
+  seller_ifsc_code?: string;
+  seller_account_holder_name?: string;
+  seller_branch?: string;
   buyer_name: string;
   buyer_gstin?: string;
   buyer_address: string;

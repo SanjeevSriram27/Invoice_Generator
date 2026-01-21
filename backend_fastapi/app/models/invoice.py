@@ -54,6 +54,13 @@ class Invoice(Base):
     seller_logo = Column(String(500), nullable=True)
     seller_website = Column(String(200), nullable=True)
 
+    # Seller bank details
+    seller_bank_name = Column(String(200), nullable=True)
+    seller_account_number = Column(String(50), nullable=True)
+    seller_ifsc_code = Column(String(11), nullable=True)
+    seller_account_holder_name = Column(String(200), nullable=True)
+    seller_branch = Column(String(200), nullable=True)
+
     # Buyer details (Issued To)
     buyer_name = Column(String(255), nullable=False)
     buyer_gstin = Column(String(15), nullable=True)

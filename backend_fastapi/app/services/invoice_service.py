@@ -274,6 +274,12 @@ class InvoiceService:
             seller_email = settings.topmate_email
             seller_website = settings.topmate_website
             seller_logo = None
+            # Bank details (not used for Topmate invoices)
+            seller_bank_name = None
+            seller_account_number = None
+            seller_ifsc_code = None
+            seller_account_holder_name = None
+            seller_branch = None
         else:
             # User invoice - use provided seller details
             seller_name = invoice_data['seller_name']
@@ -287,6 +293,12 @@ class InvoiceService:
             # Convert base64 logo to file
             seller_logo_base64 = invoice_data.get('seller_logo')
             seller_logo = self._save_base64_image(seller_logo_base64, 'seller_logo') if seller_logo_base64 else None
+            # Bank details
+            seller_bank_name = invoice_data.get('seller_bank_name')
+            seller_account_number = invoice_data.get('seller_account_number')
+            seller_ifsc_code = invoice_data.get('seller_ifsc_code')
+            seller_account_holder_name = invoice_data.get('seller_account_holder_name')
+            seller_branch = invoice_data.get('seller_branch')
 
         # Convert buyer logo if provided
         buyer_logo_base64 = invoice_data.get('buyer_logo')
@@ -317,6 +329,12 @@ class InvoiceService:
             seller_email=seller_email,
             seller_logo=seller_logo,
             seller_website=seller_website,
+            # Seller bank details
+            seller_bank_name=seller_bank_name,
+            seller_account_number=seller_account_number,
+            seller_ifsc_code=seller_ifsc_code,
+            seller_account_holder_name=seller_account_holder_name,
+            seller_branch=seller_branch,
             # Buyer
             buyer_name=invoice_data['buyer_name'],
             buyer_gstin=invoice_data.get('buyer_gstin'),

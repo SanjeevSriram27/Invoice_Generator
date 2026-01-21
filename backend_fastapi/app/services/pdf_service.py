@@ -203,14 +203,26 @@ class PDFService:
             draw_text(margin + 0.6*cm, y_addr, f"PIN: {invoice.seller_pincode}", "Helvetica", 9)
             y_addr -= 0.6*cm
 
-        # Bank details within seller box
-        draw_text(margin + 0.6*cm, y_addr, "BANK DETAILS", "Helvetica", 10, bold=True)
-        y_addr -= 0.5*cm
-        draw_text(margin + 0.6*cm, y_addr, "Bank: HDFC Bank", "Helvetica", 8)
-        y_addr -= 0.4*cm
-        draw_text(margin + 0.6*cm, y_addr, "A/c: 50200012345678", "Helvetica", 8)
-        y_addr -= 0.4*cm
-        draw_text(margin + 0.6*cm, y_addr, "IFSC: HDFC0001234", "Helvetica", 8)
+        # Bank details within seller box (only if provided)
+        if invoice.seller_bank_name or invoice.seller_account_number:
+            draw_text(margin + 0.6*cm, y_addr, "BANK DETAILS", "Helvetica", 10, bold=True)
+            y_addr -= 0.5*cm
+
+            if invoice.seller_bank_name:
+                draw_text(margin + 0.6*cm, y_addr, f"Bank: {invoice.seller_bank_name}", "Helvetica", 8)
+                y_addr -= 0.4*cm
+
+            if invoice.seller_account_number:
+                draw_text(margin + 0.6*cm, y_addr, f"A/c: {invoice.seller_account_number}", "Helvetica", 8)
+                y_addr -= 0.4*cm
+
+            if invoice.seller_ifsc_code:
+                draw_text(margin + 0.6*cm, y_addr, f"IFSC: {invoice.seller_ifsc_code}", "Helvetica", 8)
+                y_addr -= 0.4*cm
+
+            if invoice.seller_account_holder_name:
+                draw_text(margin + 0.6*cm, y_addr, f"A/c Holder: {invoice.seller_account_holder_name}", "Helvetica", 8)
+                y_addr -= 0.4*cm
 
         # Buyer box
         p.rect(margin + (width - 2*margin) / 2 + 0.4*cm, y_pos - box_height, (width - 2*margin) / 2 - 0.4*cm, box_height, stroke=1, fill=0)

@@ -144,3 +144,10 @@ class BulkUploadSettings(BaseModel):
     seller_phone: Optional[str] = None
     seller_email: Optional[str] = None
     seller_website: Optional[str] = None
+
+    # Seller bank details (for user invoices)
+    seller_bank_name: Optional[str] = None
+    seller_account_number: Optional[str] = None
+    seller_ifsc_code: Optional[str] = None
+    seller_account_holder_name: Optional[str] = None
+    seller_branch: Optional[str] = None

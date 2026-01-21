@@ -172,6 +172,9 @@ export default function BulkUploadPage() {
             seller_address: formData.sellerAddress,
             seller_pincode: formData.sellerPincode,
             seller_state: formData.sellerState,
+            seller_phone: formData.sellerPhone,
+            seller_email: formData.sellerEmail,
+            seller_website: (formData as any).sellerWebsite,
             gst_rate: parseFloat(formData.gstRate)
           });
           setHasSavedDetails(true);

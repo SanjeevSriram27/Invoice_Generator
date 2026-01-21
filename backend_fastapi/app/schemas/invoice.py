@@ -28,6 +28,13 @@ class InvoiceBase(BaseModel):
     seller_website: Optional[str] = Field(None, max_length=200)
     seller_logo: Optional[str] = None  # Base64 image data (can be very long)
 
+    # Seller bank details
+    seller_bank_name: Optional[str] = Field(None, max_length=200, description="Bank name")
+    seller_account_number: Optional[str] = Field(None, max_length=50, description="Account number")
+    seller_ifsc_code: Optional[str] = Field(None, max_length=11, description="IFSC code")
+    seller_account_holder_name: Optional[str] = Field(None, max_length=200, description="Account holder name")
+    seller_branch: Optional[str] = Field(None, max_length=200, description="Bank branch name")
+
     # Buyer details (always required)
     buyer_name: str = Field(..., min_length=1, max_length=200)
     buyer_gstin: Optional[str] = Field(None, min_length=15, max_length=15)

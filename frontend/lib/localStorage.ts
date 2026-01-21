@@ -8,6 +8,14 @@ export interface SavedSellerDetails {
   seller_address: string;
   seller_pincode: string;
   seller_state: string;
+  seller_phone?: string;
+  seller_email?: string;
+  seller_website?: string;
+  seller_bank_name?: string;
+  seller_account_number?: string;
+  seller_ifsc_code?: string;
+  seller_account_holder_name?: string;
+  seller_branch?: string;
   gst_rate: number;
 }
 

@@ -58,6 +58,14 @@ export default function InvoiceForm({
         seller_address: formData.seller_address,
         seller_pincode: formData.seller_pincode,
         seller_state: formData.seller_state,
+        seller_phone: formData.seller_phone,
+        seller_email: formData.seller_email,
+        seller_website: formData.seller_website,
+        seller_bank_name: formData.seller_bank_name,
+        seller_account_number: formData.seller_account_number,
+        seller_ifsc_code: formData.seller_ifsc_code,
+        seller_account_holder_name: formData.seller_account_holder_name,
+        seller_branch: formData.seller_branch,
         gst_rate: formData.gst_rate || 18,
       });
     }
@@ -225,6 +233,64 @@ export default function InvoiceForm({
                     onChange={(e) => updateField('seller_website', e.target.value)}
                   />
                   <p className="text-xs text-gray-500 mt-1">Your business website or profile URL (will appear on invoice)</p>
+                </div>
+              </div>
+
+              {/* Bank Details Section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <div className="md:col-span-2">
+                  <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Bank Details <span className="text-gray-400">(Optional)</span></h4>
+                </div>
+                <div>
+                  <label className="block label-text mb-1">Bank Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g., HDFC Bank"
+                    className="form-input"
+                    value={formData.seller_bank_name || ''}
+                    onChange={(e) => updateField('seller_bank_name', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block label-text mb-1">Account Holder Name</label>
+                  <input
+                    type="text"
+                    placeholder="Name as per bank account"
+                    className="form-input"
+                    value={formData.seller_account_holder_name || ''}
+                    onChange={(e) => updateField('seller_account_holder_name', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block label-text mb-1">Account Number</label>
+                  <input
+                    type="text"
+                    placeholder="e.g., 1234567890123"
+                    className="form-input"
+                    value={formData.seller_account_number || ''}
+                    onChange={(e) => updateField('seller_account_number', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block label-text mb-1">IFSC Code</label>
+                  <input
+                    type="text"
+                    placeholder="e.g., HDFC0001234"
+                    className="form-input"
+                    maxLength={11}
+                    value={formData.seller_ifsc_code || ''}
+                    onChange={(e) => updateField('seller_ifsc_code', e.target.value.toUpperCase())}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block label-text mb-1">Branch Name <span className="text-gray-400">(Optional)</span></label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Koramangala Branch"
+                    className="form-input"
+                    value={formData.seller_branch || ''}
+                    onChange={(e) => updateField('seller_branch', e.target.value)}
+                  />
                 </div>
               </div>
 
