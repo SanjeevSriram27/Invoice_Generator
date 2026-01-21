@@ -1,0 +1,47 @@
+# FastAPI and ASGI Server
+fastapi==0.115.0
+uvicorn[standard]==0.30.0
+
+# Database
+sqlalchemy[asyncio]==2.0.32
+asyncpg==0.29.0
+alembic==1.13.2
+
+# Validation and Settings
+pydantic==2.9.0
+pydantic-settings==2.5.0
+
+# Async Libraries
+aiosmtplib==3.0.2
+aiofiles==24.1.0
+httpx==0.27.0
+
+# AWS Services
+boto3>=1.34.0
+aioboto3>=13.0.0
+
+# File Upload
+python-multipart==0.0.9
+
+# PDF Generation (kept from Django)
+reportlab==4.0.7
+pdfkit==1.0.0
+
+# Image Processing (kept from Django)
+Pillow==10.1.0
+
+# Date/Time Utilities (kept from Django)
+python-dateutil==2.8.2
+
+# WhatsApp Integration (kept from Django)
+twilio==9.0.4
+
+# Environment Variables (kept from Django)
+python-decouple==3.8
+
+# Testing
+pytest==8.3.3
+pytest-asyncio==0.24.0
+
+# Development
+python-dotenv==1.0.1

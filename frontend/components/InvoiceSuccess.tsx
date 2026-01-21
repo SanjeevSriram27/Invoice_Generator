@@ -72,6 +72,7 @@ export default function InvoiceSuccess({
     }
   }, [invoice, onShareEmail]);
 
+
   const totalGST = (
     parseFloat(String(invoice.cgst || '0')) +
     parseFloat(String(invoice.sgst || '0')) +

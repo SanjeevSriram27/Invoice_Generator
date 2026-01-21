@@ -125,24 +125,38 @@ export default function BulkUploadPage() {
     try {
       const formDataToSend = new FormData();
       formDataToSend.append('csv_file', file);
-      formDataToSend.append('invoice_type', formData.invoiceType);
-      formDataToSend.append('user_id', formData.userId);
-      formDataToSend.append('create_as_draft', formData.createAsDraft.toString());
-      formDataToSend.append('send_email', formData.sendEmail.toString());
-      formDataToSend.append('send_whatsapp', formData.sendWhatsapp.toString());
-      formDataToSend.append('gst_rate', formData.gstRate);
+
+      // Build query parameters
+      const queryParams = new URLSearchParams({
+        invoice_type: formData.invoiceType,
+        user_id: formData.userId,
+        create_as_draft: formData.createAsDraft.toString(),
+        send_email: formData.sendEmail.toString(),
+        send_whatsapp: formData.sendWhatsapp.toString(),
+        gst_rate: formData.gstRate,
+      });
 
       if (formData.invoiceType === 'user') {
-        formDataToSend.append('seller_name', formData.sellerName);
-        formDataToSend.append('seller_gstin', formData.sellerGstin);
-        formDataToSend.append('seller_address', formData.sellerAddress);
-        formDataToSend.append('seller_pincode', formData.sellerPincode);
-        formDataToSend.append('seller_state', formData.sellerState);
-        formDataToSend.append('seller_phone', formData.sellerPhone);
-        formDataToSend.append('seller_email', formData.sellerEmail);
+        queryParams.append('seller_name', formData.sellerName);
+        queryParams.append('seller_gstin', formData.sellerGstin);
+        queryParams.append('seller_address', formData.sellerAddress);
+        queryParams.append('seller_pincode', formData.sellerPincode);
+        queryParams.append('seller_state', formData.sellerState);
+        if (formData.sellerPhone) queryParams.append('seller_phone', formData.sellerPhone);
+        if (formData.sellerEmail) queryParams.append('seller_email', formData.sellerEmail);
+
+        // Append logo if uploaded
+        if ((formData as any).sellerLogo) {
+          formDataToSend.append('seller_logo', (formData as any).sellerLogo);
+        }
+
+        // Append website if provided
+        if ((formData as any).sellerWebsite) {
+          queryParams.append('seller_website', (formData as any).sellerWebsite);
+        }
       }
 
-      const response = await fetch('http://127.0.0.1:8000/api/invoices/bulk-upload/', {
+      const response = await fetch(`http://127.0.0.1:8000/api/invoices/bulk-upload/?${queryParams.toString()}`, {
         method: 'POST',
         body: formDataToSend,
       });
@@ -241,7 +255,7 @@ export default function BulkUploadPage() {
                 className="block w-full text-sm text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 focus:outline-none p-2.5"
               />
               {file && (
-                <p className="mt-2 text-sm text-green-600">✓ {file.name} selected</p>
+                <p className="mt-2 text-sm text-green-600">{file.name} selected</p>
               )}
             </div>
 
@@ -449,6 +463,39 @@ export default function BulkUploadPage() {
                   <ErrorMessage errors={errors} field="sellerEmail" />
                 </div>
 
+                <div>
+                  <label className="block label-text mb-2">
+                    Business Logo (Optional)
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg"
+                    onChange={(e) => {
+                      const logoFile = e.target.files?.[0];
+                      if (logoFile) {
+                        setFormData(prev => ({ ...prev, sellerLogo: logoFile as any }));
+                      }
+                    }}
+                    className="block w-full text-sm text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 focus:outline-none p-2.5"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Upload your business logo (PNG, JPG). Max size: 120x60px recommended.</p>
+                </div>
+
+                <div>
+                  <label className="block label-text mb-2">
+                    Website/Profile URL (Optional)
+                  </label>
+                  <input
+                    type="url"
+                    name="sellerWebsite"
+                    value={(formData as any).sellerWebsite || ''}
+                    onChange={handleInputChange}
+                    className="block w-full p-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500"
+                    placeholder="https://mycompany.com"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Your business website or profile URL (will appear on all invoices)</p>
+                </div>
+
                 {/* Save Details Checkbox and Clear Button */}
                 <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
                   <label className="flex items-center cursor-pointer">
@@ -459,7 +506,7 @@ export default function BulkUploadPage() {
                       className="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded focus:ring-blue-500"
                     />
                     <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                      💾 Save my business details for next time
+                      Save my business details for next time
                     </span>
                   </label>
                   {hasSavedDetails && (
@@ -468,7 +515,7 @@ export default function BulkUploadPage() {
                       onClick={handleClearSavedDetails}
                       className="text-sm text-red-600 hover:text-red-800 hover:underline transition-colors"
                     >
-                      🗑️ Clear Saved Details
+                      Clear Saved Details
                     </button>
                   )}
                 </div>
@@ -509,21 +556,18 @@ export default function BulkUploadPage() {
           {result && (
             <div className="mt-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-green-900 dark:text-green-200 mb-4">
-                {result.message}
+                Bulk Upload Completed
               </h3>
 
               {/* Summary */}
               <div className="bg-white dark:bg-gray-800 rounded-lg p-4 mb-4">
                 <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Summary:</h4>
                 <ul className="space-y-1 text-sm text-gray-900 dark:text-gray-200">
-                  <li>Total Rows: {result.summary.total_rows}</li>
-                  <li>✅ Successful: {result.summary.successful}</li>
-                  <li>❌ Failed: {result.summary.failed}</li>
-                  {result.summary.emails_sent !== null && (
-                    <li>📧 Emails Sent: {result.summary.emails_sent}</li>
-                  )}
-                  {result.summary.whatsapp_sent !== null && (
-                    <li>📱 WhatsApp Sent: {result.summary.whatsapp_sent}</li>
+                  <li>Total Rows: {result.total_rows}</li>
+                  <li>Successful: {result.successful}</li>
+                  <li>Failed: {result.failed}</li>
+                  {result.processing_time_seconds && (
+                    <li>Processing Time: {result.processing_time_seconds}s</li>
                   )}
                 </ul>
               </div>
@@ -531,7 +575,7 @@ export default function BulkUploadPage() {
               {/* Success List */}
               {result.successes && result.successes.length > 0 && (
                 <div className="mb-4">
-                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">✅ Successful Invoices:</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Successful Invoices:</h4>
                   <div className="space-y-2 max-h-96 overflow-y-auto">
                     {result.successes.map((success: any, index: number) => (
                       <div key={index} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 text-sm">
@@ -540,11 +584,12 @@ export default function BulkUploadPage() {
                             <p className="font-semibold text-gray-900 dark:text-gray-100">{success.buyer_name}</p>
                             <p className="text-gray-600 dark:text-gray-400">Invoice: {success.invoice_number}</p>
                             <p className="text-gray-600 dark:text-gray-400">Total: Rs. {success.total}</p>
-                            {success.email_sent && <p className="text-green-600 dark:text-green-400">✓ Email Sent</p>}
-                            {success.whatsapp_sent && <p className="text-green-600 dark:text-green-400">✓ WhatsApp Sent</p>}
+                            {success.email_sent && <p className="text-green-600 dark:text-green-400">Email Sent</p>}
+                            {success.whatsapp_sent && <p className="text-green-600 dark:text-green-400">WhatsApp Sent</p>}
+                            {success.is_draft && <p className="text-yellow-600 dark:text-yellow-400">Draft</p>}
                           </div>
                           <a
-                            href={success.download_url}
+                            href={`http://localhost:8000/api/invoices/${success.invoice_id}/download_pdf/`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs"
@@ -561,12 +606,13 @@ export default function BulkUploadPage() {
               {/* Failures List */}
               {result.failures && result.failures.length > 0 && (
                 <div>
-                  <h4 className="font-semibold mb-2 text-red-700">❌ Failed Invoices:</h4>
+                  <h4 className="font-semibold mb-2 text-red-700 dark:text-red-400">Failed Invoices:</h4>
                   <div className="space-y-2 max-h-64 overflow-y-auto">
                     {result.failures.map((failure: any, index: number) => (
-                      <div key={index} className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm">
-                        <p className="font-semibold">Row {failure.row}</p>
-                        <p className="text-red-700">{failure.errors}</p>
+                      <div key={index} className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 text-sm">
+                        <p className="font-semibold text-gray-900 dark:text-gray-100">Row {failure.row_number}</p>
+                        <p className="text-gray-700 dark:text-gray-300">Buyer: {failure.buyer_name}</p>
+                        <p className="text-red-700 dark:text-red-400 mt-1">{failure.error}</p>
                       </div>
                     ))}
                   </div>

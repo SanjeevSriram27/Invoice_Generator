@@ -1,0 +1,41 @@
+# Environment variables
+.env
+.env.local
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Logs
+*.log
+server*.log
+
+# Database
+*.sqlite3
+*.db
+
+# Media files (user uploads)
+media/invoices/*.pdf
+media/logos/*
+!media/invoices/.gitkeep
+!media/logos/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Alembic
+alembic/versions/__pycache__/

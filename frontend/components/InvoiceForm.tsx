@@ -200,6 +200,32 @@ export default function InvoiceForm({
                     <option value="28">28% - Luxury Goods</option>
                   </select>
                 </div>
+                <div className="md:col-span-2">
+                  <label className="block label-text mb-1">Business Logo <span className="text-gray-400">(Optional)</span></label>
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg"
+                    className="form-input"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        updateField('seller_logo', file);
+                      }
+                    }}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Upload your business logo (PNG, JPG). Max size: 120x60px recommended.</p>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block label-text mb-1">Website/Profile URL <span className="text-gray-400">(Optional)</span></label>
+                  <input
+                    type="url"
+                    placeholder="https://mycompany.com"
+                    className="form-input"
+                    value={formData.seller_website || ''}
+                    onChange={(e) => updateField('seller_website', e.target.value)}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Your business website or profile URL (will appear on invoice)</p>
+                </div>
               </div>
 
               {/* Save Details Checkbox and Clear Button */}
@@ -212,7 +238,7 @@ export default function InvoiceForm({
                     className="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded focus:ring-blue-500"
                   />
                   <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                    💾 Save my business details for next time
+                    Save my business details for next time
                   </span>
                 </label>
                 {hasSavedDetails && (
@@ -221,7 +247,7 @@ export default function InvoiceForm({
                     onClick={handleClearSavedDetails}
                     className="text-sm text-red-600 hover:text-red-800 hover:underline"
                   >
-                    🗑️ Clear Saved Details
+                    Clear Saved Details
                   </button>
                 )}
               </div>
