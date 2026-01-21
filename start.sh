@@ -5,18 +5,18 @@ echo " GST Invoice Generator - Starting..."
 echo "========================================"
 echo ""
 
-echo "[1/2] Starting Backend Server (Django)..."
-cd backend
-python manage.py runserver &
+echo "[1/2] Starting Backend Server (FastAPI)..."
+cd backend_fastapi
+python -m uvicorn app.main:app --reload --port 8000 &
 BACKEND_PID=$!
 echo "Backend started on http://127.0.0.1:8000 (PID: $BACKEND_PID)"
 echo ""
 
-echo "[2/2] Starting Frontend Server (Next.js with Turbopack)..."
+echo "[2/2] Starting Frontend Server (Next.js)..."
 cd ../frontend
-npm run dev -- --turbo &
+npm run dev -- --port 3001 &
 FRONTEND_PID=$!
-echo "Frontend started on http://localhost:3000 (PID: $FRONTEND_PID)"
+echo "Frontend started on http://localhost:3001 (PID: $FRONTEND_PID)"
 echo ""
 
 echo "========================================"
@@ -24,7 +24,8 @@ echo " Both servers are running!"
 echo "========================================"
 echo ""
 echo "Backend:  http://127.0.0.1:8000"
-echo "Frontend: http://localhost:3000"
+echo "API Docs: http://127.0.0.1:8000/docs"
+echo "Frontend: http://localhost:3001"
 echo ""
 echo "Press Ctrl+C to stop both servers"
 echo ""
