@@ -216,14 +216,13 @@ def validate_phone_field(value: str) -> str:
 def validate_gstin_field(value: str) -> str:
     """
     Pydantic field validator for GSTIN.
-    Raises ValueError if invalid, returns GSTIN if valid.
+    Accepts any non-empty GSTIN value without strict format validation.
     """
     if not value:
         return value
 
-    is_valid, error = validate_gstin(value)
-    if not is_valid:
-        raise ValueError(error)
+    # Accept GSTIN as-is without format validation
+    # Format validation can be enforced later if needed
     return value
 
 
