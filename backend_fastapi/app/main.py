@@ -197,3 +197,8 @@ if __name__ == "__main__":
         reload=True,
         log_level="info"
     )
+    
+from mangum import Mangum
+
+handler = Mangum(app)
+

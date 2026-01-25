@@ -45,3 +45,6 @@ pytest-asyncio==0.24.0
 
 # Development
 python-dotenv==1.0.1
+
+# AWS Lambda Adapter
+mangum==0.20.0
