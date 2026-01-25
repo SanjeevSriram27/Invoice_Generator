@@ -4,14 +4,14 @@ echo Starting Invoice Generator - FastAPI Backend + Next.js Frontend
 echo ================================================================================
 echo.
 
-REM Start FastAPI Backend
+REM Start FastAPI Backend in a new window
 echo [1/2] Starting FastAPI Backend on port 8000...
-start "FastAPI Backend" cmd /k "cd /d %~dp0backend_fastapi && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"
+start "FastAPI Backend" cmd /k "cd /d %~dp0 && call start_backend.bat"
 timeout /t 3 /nobreak > nul
 
-REM Start Next.js Frontend
+REM Start Next.js Frontend in a new window  
 echo [2/2] Starting Next.js Frontend on port 3001...
-start "Next.js Frontend" cmd /k "cd /d %~dp0frontend && npm run dev -- -p 3001"
+start "Next.js Frontend" cmd /k "cd /d %~dp0 && call start_frontend.bat"
 timeout /t 3 /nobreak > nul
 
 echo.
@@ -25,3 +25,4 @@ echo Frontend: http://localhost:3001
 echo.
 echo Press Ctrl+C in each window to stop the servers
 echo ================================================================================
+
