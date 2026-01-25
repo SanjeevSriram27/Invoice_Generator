@@ -185,6 +185,14 @@ async def general_exception_handler(request: Request, exc: Exception):
     )
 
 
+# AWS Lambda handler
+try:
+    from mangum import Mangum
+    handler = Mangum(app)
+except ImportError:
+    handler = None
+
+
 if __name__ == "__main__":
     import uvicorn
 
@@ -197,8 +205,4 @@ if __name__ == "__main__":
         reload=True,
         log_level="info"
     )
-    
-from mangum import Mangum
-
-handler = Mangum(app)
 
